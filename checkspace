@@ -1,0 +1,22 @@
+#!/bin/bash
+threshold=10 # Size in GB to alert on
+alert($name) {
+    emails=@("jacquesaronius@gmail.com") # Email addresses to notify
+    #for i in $emails
+    #do
+}
+
+cmd_out=`docker ps --format "{{ .Names }} {{ .Size }}" -a --size \
+| grep -v MB | sed -E "s/GB.*//"`
+
+IFS=$'\n'; cmd_out=($cmd_out); unset IFS;
+
+for i in $cmd_out
+do
+    IFS=$' '; fields=($cmd_out); unset IFS;
+    name=$fields[0]
+    size=$fields[1]
+
+    if $size
+
+
