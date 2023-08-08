@@ -1,5 +1,5 @@
 #!/bin/bash
-threshold=10 # Size in GB to alert on
+threshold=5 # Size in GB to alert on
 alert() {
     emails=("jacquesaronius@gmail.com") # Email addresses to notify
     #for i in $emails
@@ -10,20 +10,21 @@ alert() {
 cmd_out=`docker ps --format "{{ .Names }} {{ .Size }}" -a --size \
 | grep -v MB | sed -E "s/GB.*//"`
 
-IFS=$'\n'; cmd_out=($cmd_out); unset IFS;
-
-for i in $cmd_out
+SAVEIFS=$IFS
+IFS=$'\n'
+cmd_lines=($cmd_out)
+for i in ${cmd_lines[@]}
 do
-    IFS=$' '; fields=($cmd_out); unset IFS;
-    name=$fields[0]
-    size=$fields[1]
-    echo $name
-    echo $size
-    difference=`echo $size - $threshold | bc -l`
-    echo $difference
+    IFS=$' '
+    fields=($i)
+    IFS=$'\n'
+    name=${fields[0]}
+    size=${fields[1]}
 
-    if [ $difference -gt 0 ]
+
+    if ((`echo "$size > $threshold" | bc -l`))
     then 
         alert $name
     fi
 done
+IFS=$SAVEIFS
