@@ -1,9 +1,10 @@
 #!/bin/bash
 threshold=10 # Size in GB to alert on
-alert($name) {
-    emails=@("jacquesaronius@gmail.com") # Email addresses to notify
+alert() {
+    emails=("jacquesaronius@gmail.com") # Email addresses to notify
     #for i in $emails
     #do
+    echo "Docker container $1 is using more than $threshold GB"
 }
 
 cmd_out=`docker ps --format "{{ .Names }} {{ .Size }}" -a --size \
@@ -16,7 +17,13 @@ do
     IFS=$' '; fields=($cmd_out); unset IFS;
     name=$fields[0]
     size=$fields[1]
+    echo $name
+    echo $size
+    difference=`echo $size - $threshold | bc -l`
+    echo $difference
 
-    if $size
-
-
+    if [ $difference -gt 0 ]
+    then 
+        alert $name
+    fi
+done
